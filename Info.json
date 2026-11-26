@@ -1,0 +1,8 @@
+{
+  "Id": "PerformanceTuner",
+  "DisplayName": "Performance Optimizer",
+  "Author": "local",
+  "Version": "1.3.0",
+  "ManagerVersion": "0.28.2",
+  "EntryMethod": "PerformanceTuner.Main.Load"
+}

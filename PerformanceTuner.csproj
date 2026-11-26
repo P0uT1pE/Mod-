@@ -1,0 +1,63 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="GameDir.props" />
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <AssemblyName>PerformanceTuner</AssemblyName>
+    <Version>1.3.0</Version>
+    <RootNamespace>PerformanceTuner</RootNamespace>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <DebugType>none</DebugType>
+    <ImplicitUsings>disable</ImplicitUsings>
+
+    <!-- Папка *_Data: у GOG-версии она называется "Lords and Villeins_Data", у других может быть "Lords_and_Villeins_Data" -->
+    <DataDir Condition="'$(DataDir)' == '' And Exists('$(GameDir)\Lords and Villeins_Data\Managed\Assembly-CSharp.dll')">$(GameDir)\Lords and Villeins_Data</DataDir>
+    <DataDir Condition="'$(DataDir)' == '' And Exists('$(GameDir)\Lords_and_Villeins_Data\Managed\Assembly-CSharp.dll')">$(GameDir)\Lords_and_Villeins_Data</DataDir>
+    <ManagedDir>$(DataDir)\Managed</ManagedDir>
+    <UmmDir Condition="'$(UmmDir)' == ''">$(ManagedDir)\UnityModManager</UmmDir>
+  </PropertyGroup>
+
+  <!-- Понятная ошибка, если пути неверные -->
+  <Target Name="CheckGamePaths" BeforeTargets="ResolveAssemblyReferences;CoreCompile">
+    <Error Condition="'$(DataDir)' == ''"
+           Text="Не найдена папка игры. Откройте GameDir.props и впишите путь к папке, где лежит exe игры (сейчас: $(GameDir))." />
+    <Error Condition="!Exists('$(UmmDir)\UnityModManager.dll')"
+           Text="Не найден UnityModManager.dll в $(UmmDir). Найдите файл через поиск Windows в папке игры и впишите его папку в GameDir.props как UmmDir." />
+    <Error Condition="!Exists('$(UmmDir)\0Harmony.dll')"
+           Text="Не найден 0Harmony.dll в $(UmmDir). Впишите правильную папку UmmDir в GameDir.props." />
+  </Target>
+
+  <ItemGroup>
+    <!-- Набор ссылок на стандартные сборки .NET Framework: ставится сам из интернета (NuGet) -->
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Код игры и Unity -->
+    <Reference Include="$(ManagedDir)\Assembly-CSharp.dll"><Private>false</Private></Reference>
+    <Reference Include="$(ManagedDir)\UnityEngine*.dll"><Private>false</Private></Reference>
+    <Reference Include="$(ManagedDir)\Unity.*.dll"><Private>false</Private></Reference>
+    <Reference Include="$(ManagedDir)\OdinSerializer.dll"><Private>false</Private></Reference>
+    <Reference Include="$(ManagedDir)\GraphAndChart.dll"><Private>false</Private></Reference>
+    <Reference Include="$(ManagedDir)\LoopScrollRect.Runtime.dll"><Private>false</Private></Reference>
+    <Reference Include="$(ManagedDir)\ProjectDawn.Collections.dll"><Private>false</Private></Reference>
+    <Reference Include="$(ManagedDir)\Logger.dll"><Private>false</Private></Reference>
+
+    <!-- Unity Mod Manager и Harmony -->
+    <Reference Include="$(UmmDir)\UnityModManager.dll"><Private>false</Private></Reference>
+    <Reference Include="$(UmmDir)\0Harmony.dll"><Private>false</Private></Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Info.json" />
+  </ItemGroup>
+
+  <!-- После сборки кладём мод в папку Mods игры (закройте игру перед сборкой!) -->
+  <Target Name="InstallMod" AfterTargets="Build" Condition="Exists('$(GameDir)\Mods')">
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(GameDir)\Mods\PerformanceTuner" />
+    <Copy SourceFiles="$(MSBuildProjectDirectory)\Info.json" DestinationFolder="$(GameDir)\Mods\PerformanceTuner" />
+    <Message Importance="high" Text="Мод установлен: $(GameDir)\Mods\PerformanceTuner" />
+  </Target>
+
+</Project>

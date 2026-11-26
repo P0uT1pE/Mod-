@@ -1,0 +1,10 @@
+﻿<Project>
+  <!-- ЕДИНСТВЕННОЕ, ЧТО ВОЗМОЖНО ПРИДЁТСЯ ПОМЕНЯТЬ: путь к папке игры (где лежит exe-файл). -->
+  <PropertyGroup>
+    <GameDir>C:\GOG Games\Lords and Villeins</GameDir>
+
+    <!-- Обычно ниже ничего менять не нужно. Раскомментируйте, только если сборка ругается на пути. -->
+    <!-- <DataDir>C:\GOG Games\Lords and Villeins\Lords and Villeins_Data</DataDir> -->
+    <!-- <UmmDir>C:\GOG Games\Lords and Villeins\Lords and Villeins_Data\Managed\UnityModManager</UmmDir> -->
+  </PropertyGroup>
+</Project>
